@@ -1,3 +1,23 @@
 textarea {
-    min-height: 400px;
+  min-height: 400px;
+}
+
+.flex-container {
+  display: flex;
+  flex-direction: row;
+  padding: 5px;
+  border: 1px solid;
+}
+
+.sender {
+  flex: 1 0 100px;
+  font-weight: bold;
+}
+
+.subject {
+  flex: 3 0 100px;
+}
+
+.timestamp {
+  flex: 1 0 100px;
 }

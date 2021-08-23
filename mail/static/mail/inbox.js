@@ -37,6 +37,8 @@ function compose_email() {
       if (result['error']) {
         window.alert(result['error']);
       }
+      // Load the user's sent mailbox
+      load_mailbox('sent');
     });
   });
 }
@@ -55,5 +57,37 @@ function load_mailbox(mailbox) {
   .then(response => response.json())
   .then(emails => {
     console.log(emails)
+
+    // Set a counter
+    let i = 0;
+    // Loop over the emails object
+    emails.forEach(email => {
+      // Create the HTML elements
+      const div = document.createElement('div');
+      div.className = 'flex-container';
+      // Make the id of each email element unique
+      div.id = `email${i}`
+
+      const sender = document.createElement('div');
+      sender.className = 'sender';
+      sender.innerHTML = email.sender;
+
+      const subject = document.createElement('div');
+      subject.className = 'subject';
+      subject.innerHTML = email.subject;
+
+      const timestamp = document.createElement('div');
+      timestamp.className = 'timestamp';
+      timestamp.innerHTML = email.timestamp;
+
+      // Append all the elements to the DOM
+      document.querySelector('#emails-view').append(div);
+      document.querySelector(`#email${i}`).append(sender);
+      document.querySelector(`#email${i}`).append(subject);
+      document.querySelector(`#email${i}`).append(timestamp)
+
+      // increment counter
+      i++;
+    })
   });
 }
