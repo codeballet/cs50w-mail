@@ -41,6 +41,9 @@ function compose_email() {
       }
       // Load the user's sent mailbox
       load_mailbox('sent');
+    })
+    .catch(error => {
+      console.log('Error:', error);
     });
   });
 }
@@ -65,12 +68,12 @@ function load_mailbox(mailbox) {
     emails.forEach(email => {
       // get the email id
       id = email.id;
-      // Create the HTML elements
+      // Create HTML elements
       const div = document.createElement('div');
       div.className = 'flex-container';
 
-      // Make the id of each email div unique
-      div.id = `email_${id}`
+      // give unique id to each email div element
+      div.id = `email-${id}`
 
       const sender = document.createElement('div');
       sender.className = 'sender';
@@ -84,19 +87,22 @@ function load_mailbox(mailbox) {
       timestamp.className = 'timestamp';
       timestamp.innerHTML = email.timestamp;
 
-      // Append all the elements to the DOM
+      // Append elements to DOM
       document.querySelector('#emails-view').append(div);
-      document.querySelector(`#email_${id}`).append(sender);
-      document.querySelector(`#email_${id}`).append(subject);
-      document.querySelector(`#email_${id}`).append(timestamp)
+      document.querySelector(`#email-${id}`).append(sender);
+      document.querySelector(`#email-${id}`).append(subject);
+      document.querySelector(`#email-${id}`).append(timestamp)
 
       // Add event listener to email div
-      document.querySelector(`#email_${id}`).onclick = (e) => {
+      document.querySelector(`#email-${id}`).onclick = (e) => {
         const email_id = e.target.parentElement.id;
-        const id = parseInt(email_id.split('_')[1]);
+        const id = parseInt(email_id.split('-')[1]);
         load_email(id);
       }
     })
+  })
+  .catch(error => {
+    console.log('Error:', error);
   });
 }
 
@@ -106,5 +112,20 @@ function load_email(id) {
   document.querySelector('#compose-view').style.display = 'none';
   document.querySelector('#email-view').style.display = 'block';
 
-  document.querySelector('#email-view').innerHTML = `Load email with id "${id}" here.`;
+  // fetch the email
+  fetch(`/emails/${id}`)
+  .then(response => response.json())
+  .then(email => {
+    console.log(email)
+
+    // create HTML elements
+    const sender_span = document.createElement('span');
+    sender_span.className = 'email-info'
+    sender_span.innerHTML = email.sender;
+
+    // append elements to DOM
+    document.querySelector('#email-from').append(sender_span);  })
+  .catch(error => {
+    console.log('Error:', error);
+  });
 }

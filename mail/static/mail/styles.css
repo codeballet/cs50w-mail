@@ -2,6 +2,10 @@ textarea {
   min-height: 400px;
 }
 
+.email-info {
+  font-weight: normal;
+}
+
 .flex-container {
   display: flex;
   flex-direction: row;
