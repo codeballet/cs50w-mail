@@ -15,6 +15,7 @@ function compose_email() {
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
+  document.querySelector('#email-view').style.display = 'none';
 
   // Clear out composition fields
   document.querySelector('#compose-recipients').value = '';
@@ -49,6 +50,7 @@ function load_mailbox(mailbox) {
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#email-view').style.display = 'none';
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
@@ -59,15 +61,16 @@ function load_mailbox(mailbox) {
   .then(emails => {
     console.log(emails)
 
-    // Set a counter
-    let i = 0;
     // Loop over the emails object
     emails.forEach(email => {
+      // get the email id
+      id = email.id;
       // Create the HTML elements
       const div = document.createElement('div');
       div.className = 'flex-container';
-      // Make the id of each email element unique
-      div.id = `email${i}`
+
+      // Make the id of each email div unique
+      div.id = `email_${id}`
 
       const sender = document.createElement('div');
       sender.className = 'sender';
@@ -83,12 +86,25 @@ function load_mailbox(mailbox) {
 
       // Append all the elements to the DOM
       document.querySelector('#emails-view').append(div);
-      document.querySelector(`#email${i}`).append(sender);
-      document.querySelector(`#email${i}`).append(subject);
-      document.querySelector(`#email${i}`).append(timestamp)
+      document.querySelector(`#email_${id}`).append(sender);
+      document.querySelector(`#email_${id}`).append(subject);
+      document.querySelector(`#email_${id}`).append(timestamp)
 
-      // increment counter
-      i++;
+      // Add event listener to email div
+      document.querySelector(`#email_${id}`).onclick = (e) => {
+        const email_id = e.target.parentElement.id;
+        const id = parseInt(email_id.split('_')[1]);
+        load_email(id);
+      }
     })
   });
+}
+
+function load_email(id) {
+  // Show load_email view and hide other views
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#email-view').style.display = 'block';
+
+  document.querySelector('#email-view').innerHTML = `Load email with id "${id}" here.`;
 }
