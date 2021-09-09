@@ -72,6 +72,11 @@ function load_mailbox(mailbox) {
       const div = document.createElement('div');
       div.className = 'flex-container';
 
+      // colour the div grey if email is read
+      if (email.read && mailbox === 'inbox') {
+        div.style.backgroundColor = '#bbbbbb';
+      }
+
       // give unique id to each email div element
       div.id = `email-${id}`
 
@@ -91,7 +96,7 @@ function load_mailbox(mailbox) {
       document.querySelector('#emails-view').append(div);
       document.querySelector(`#email-${id}`).append(sender);
       document.querySelector(`#email-${id}`).append(subject);
-      document.querySelector(`#email-${id}`).append(timestamp)
+      document.querySelector(`#email-${id}`).append(timestamp);      
 
       // Add event listener to email div
       document.querySelector(`#email-${id}`).onclick = (e) => {
@@ -118,13 +123,59 @@ function load_email(id) {
   .then(email => {
     console.log(email)
 
+    // set the archive button
+    if (email.archived) {
+      document.querySelector('#archive').innerHTML = 'Unarchive';
+    } else {
+      document.querySelector('#archive').innerHTML = 'Archive';
+    }
+
     // create HTML elements
     const sender_span = document.createElement('span');
-    sender_span.className = 'email-info'
+    sender_span.className = 'email-info';
     sender_span.innerHTML = email.sender;
 
+    const recipients_span = document.createElement('span');
+    recipients_span.className = 'email-info';
+    recipients_span.innerHTML = email.recipients.join('; ');
+
+    const subject_span = document.createElement('span');
+    subject_span.className = 'email-info';
+    subject_span.innerHTML = email.subject;
+
+    const timestamp_span = document.createElement('span');
+    timestamp_span.className = 'email-info';
+    timestamp_span.innerHTML = email.timestamp;
+
+    const body = document.createElement('p');
+    body.className = 'email-info';
+    body.innerHTML = email.body;
+
+    // clear any existing email-info class
+    if (document.querySelector('.email-info')) {
+      document.querySelectorAll('.email-info').forEach(info => {
+        info.remove();
+      })
+    }
+
     // append elements to DOM
-    document.querySelector('#email-from').append(sender_span);  })
+    document.querySelector('#email-from').append(sender_span);
+    document.querySelector('#email-to').append(recipients_span);
+    document.querySelector('#email-subject').append(subject_span);
+    document.querySelector('#email-timestamp').append(timestamp_span);
+    document.querySelector('#email-body').append(body);
+
+    // update email read status to true
+    fetch(`/emails/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        read: true
+      })
+    })
+    .catch(error => {
+      console.log('Error:', error);
+    })
+  })
   .catch(error => {
     console.log('Error:', error);
   });
