@@ -123,7 +123,7 @@ function load_email(id) {
   .then(email => {
     console.log(email)
 
-    // set the archive button
+    // set the archive button text
     if (email.archived) {
       document.querySelector('#archive').innerHTML = 'Unarchive';
     } else {
@@ -175,6 +175,13 @@ function load_email(id) {
     .catch(error => {
       console.log('Error:', error);
     })
+
+    // create eventlistener for archive button
+
+    // send fetch to update the archive status
+
+    // redirect to inbox
+    
   })
   .catch(error => {
     console.log('Error:', error);
