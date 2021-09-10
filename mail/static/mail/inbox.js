@@ -4,17 +4,23 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
   document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
   document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
-  document.querySelector('#compose').addEventListener('click', compose_email);
+  document.querySelector('#compose').addEventListener('click', () => compose_email(false));
 
   // By default, load the inbox
   load_mailbox('inbox');
 });
 
 function compose_email(id) {
+  console.log(`id: ${id}`)
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
   document.querySelector('#email-view').style.display = 'none';
+
+  // Clear out composition fields
+  document.querySelector('#compose-recipients').value = '';
+  document.querySelector('#compose-subject').value = '';
+  document.querySelector('#compose-body').value = '';
 
   // if id argument given, fetch that email
   if (id) {
@@ -31,11 +37,6 @@ function compose_email(id) {
     .catch(error => {
       console.log('Error:', error);
     })
-  } else {
-    // Clear out composition fields
-    document.querySelector('#compose-recipients').value = '';
-    document.querySelector('#compose-subject').value = '';
-    document.querySelector('#compose-body').value = '';
   }
 
   // Submit form
