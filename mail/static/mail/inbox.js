@@ -80,6 +80,7 @@ function load_mailbox(mailbox) {
       // give unique id to each email div element
       div.id = `email-${id}`
 
+      // create sub elements for each email div
       const sender = document.createElement('div');
       sender.className = 'sender';
       sender.innerHTML = email.sender;
@@ -91,6 +92,13 @@ function load_mailbox(mailbox) {
       const timestamp = document.createElement('div');
       timestamp.className = 'timestamp';
       timestamp.innerHTML = email.timestamp;
+
+      // clear any existing div elements
+      if (document.querySelector(`#email-${id}`)) {
+        document.querySelectorAll(`#email-${id}`).forEach(element => {
+          element.remove();
+        })
+      }
 
       // Append elements to DOM
       document.querySelector('#emails-view').append(div);
@@ -151,10 +159,10 @@ function load_email(id) {
     body.className = 'email-info';
     body.innerHTML = email.body;
 
-    // clear any existing email-info class
+    // clear any existing content in email-info class
     if (document.querySelector('.email-info')) {
-      document.querySelectorAll('.email-info').forEach(info => {
-        info.remove();
+      document.querySelectorAll('.email-info').forEach(element => {
+        element.remove();
       })
     }
 
@@ -176,12 +184,38 @@ function load_email(id) {
       console.log('Error:', error);
     })
 
-    // create eventlistener for archive button
-
-    // send fetch to update the archive status
-
-    // redirect to inbox
-    
+    // eventlistener for archive button
+    document.querySelector('#archive').addEventListener('click', () => {
+      if (email.archived === false) {
+        // set the archived flag to true
+        fetch(`/emails/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            archived: true
+          })
+        })
+        .then(() => {
+          load_mailbox('inbox');
+        })
+        .catch(error => {
+          console.log('Error:', error);
+        })
+      } else {
+        // set the archived flag to false
+        fetch(`/emails/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            archived: false
+          })
+        })
+        .then(() => {
+          load_mailbox('inbox');
+        })
+        .catch(error => {
+          console.log('Error:', error);
+        })
+      }
+    })
   })
   .catch(error => {
     console.log('Error:', error);
