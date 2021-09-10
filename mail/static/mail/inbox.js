@@ -65,8 +65,7 @@ function compose_email(id) {
   });
 }
 
-function load_mailbox(mailbox) {
-  
+function load_mailbox(mailbox) {  
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
@@ -127,7 +126,7 @@ function load_mailbox(mailbox) {
       document.querySelector(`#email-${id}`).onclick = (e) => {
         const email_id = e.target.parentElement.id;
         const id = parseInt(email_id.split('-')[1]);
-        load_email(id);
+        load_email(id, mailbox);
       }
     })
   })
@@ -136,7 +135,9 @@ function load_mailbox(mailbox) {
   });
 }
 
-function load_email(id) {
+function load_email(id, mailbox) {
+  console.log(`mailbox: ${mailbox}`)
+
   // Show load_email view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
@@ -148,11 +149,13 @@ function load_email(id) {
   .then(email => {
     console.log(email)
 
-    // set the archive button text
-    if (email.archived) {
-      document.querySelector('#archive').innerHTML = 'Unarchive';
+    if (mailbox === 'sent') {
+      // do not show the Archive button
+      document.querySelector('#archive').style.display = 'none';
     } else {
-      document.querySelector('#archive').innerHTML = 'Archive';
+      // set the Archive button text
+      document.querySelector('#archive').style.display = 'inline';
+      document.querySelector('#archive').innerHTML = email.archived ? 'Unarchive' : 'Archive';
     }
 
     // create HTML elements
@@ -203,7 +206,7 @@ function load_email(id) {
 
     // eventlistener for archive button
     document.querySelector('#archive').addEventListener('click', () => {
-      if (email.archived === false) {
+      if (!email.archived) {
         // set the archived flag to true
         fetch(`/emails/${id}`, {
           method: 'PUT',
@@ -211,7 +214,8 @@ function load_email(id) {
             archived: true
           })
         })
-        .then(() => {
+        .then((result) => {
+          console.log(result);
           load_mailbox('inbox');
         })
         .catch(error => {
@@ -225,7 +229,8 @@ function load_email(id) {
             archived: false
           })
         })
-        .then(() => {
+        .then((result) => {
+          console.log(result);
           load_mailbox('inbox');
         })
         .catch(error => {
