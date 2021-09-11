@@ -136,8 +136,6 @@ function load_mailbox(mailbox) {
 }
 
 function load_email(id, mailbox) {
-  console.log(`mailbox: ${mailbox}`)
-
   // Show load_email view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
@@ -204,45 +202,55 @@ function load_email(id, mailbox) {
       console.log('Error:', error);
     })
 
-    // eventlistener for archive button
-    document.querySelector('#archive').addEventListener('click', () => {
-      if (!email.archived) {
-        // set the archived flag to true
-        fetch(`/emails/${id}`, {
-          method: 'PUT',
-          body: JSON.stringify({
-            archived: true
-          })
-        })
-        .then((result) => {
-          console.log(result);
-          load_mailbox('inbox');
-        })
-        .catch(error => {
-          console.log('Error:', error);
-        })
-      } else {
-        // set the archived flag to false
-        fetch(`/emails/${id}`, {
-          method: 'PUT',
-          body: JSON.stringify({
-            archived: false
-          })
-        })
-        .then((result) => {
-          console.log(result);
-          load_mailbox('inbox');
-        })
-        .catch(error => {
-          console.log('Error:', error);
-        })
-      }
-    })
-
     // eventlistener for reply button
     document.querySelector('#reply').addEventListener('click', () => {
       compose_email(id);
     })
+
+    // eventlistener for archive button
+    document.querySelector('#archive').addEventListener('click', () => {
+      if (!email.archived) {
+        // call archive function
+        archive(id);
+      } else {
+        // call unarchive function
+        unarchive(id);
+      }
+    })
+  })
+  .catch(error => {
+    console.log('Error:', error);
+  })
+}
+
+// archive emails
+function archive(id) {
+  fetch(`/emails/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      archived: true
+    })
+  })
+  .then((result) => {
+    console.log(result);
+    window.location.reload();
+  })
+  .catch(error => {
+    console.log('Error:', error);
+  })
+}
+
+// unarchive emails
+function unarchive(id) {
+  fetch(`/emails/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      archived: false
+    })
+  })
+  .then((result) => {
+    console.log(result);
+    window.location.reload();
   })
   .catch(error => {
     console.log('Error:', error);
